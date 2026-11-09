@@ -57,6 +57,13 @@ are never visible to your agents.
   of silently failing; 429/503 flow through so magpie can back off and fail
   over to your next account or model.
 
+Per account, the plugin also asks the gateway which models the key may use
+(`GET /v2/models`) and lists exactly those — Xfyun authorizes models per key,
+so an account only ever sees what it can actually call (unknown-but-authorized
+ids get a generic entry; if the list can't be fetched, the full static table
+applies). Spark models think by default; ask for `thinking: disabled` (or
+`reasoning_effort: none`) to turn it off.
+
 ## Coding Plan credit multipliers
 
 magpie shows these as the model's `rate` (a request to a ×5 model counts as

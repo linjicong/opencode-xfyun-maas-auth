@@ -50,6 +50,11 @@ magpie plugin login xfyun-token              # Token 套餐 key
 - 401 会以 `X-Magpie-Sign-In: expired` 报告给 magpie:账号被标记需重新登录,
   而不是悄悄失败;429/503 原样透传,magpie 据此退避并切换到下一个账号或模型。
 
+每个账号登录后,插件还会问网关这个 key 能用哪些模型(`GET /v2/models`),
+只列出实际有授权的模型——讯飞按 key 授权模型,账号不会看到一调用就 403 的
+模型(有授权但不在静态表里的 id 会给通用条目;列表拉不到时退回完整静态表)。
+星火模型默认开思考;用 `thinking: disabled`(或 `reasoning_effort: none`)关闭。
+
 ## Coding Plan 抵扣系数
 
 magpie 把它们显示为模型的 `rate`(×5 模型的一次请求按五次套餐请求计):

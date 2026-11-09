@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { MODELS, toProviderModels } from "../lib/models.mjs"
-import { makePlugin, transformBody } from "../lib/api.mjs"
+import { fetchLiveModelIds, makePlugin, transformBody } from "../lib/api.mjs"
 
 const json = (s) => JSON.parse(s)
 
@@ -72,6 +72,22 @@ describe("transformBody", () => {
     expect(out.tools).toEqual(body.tools)
     expect(out.tool_choice).toBe("auto")
     expect(out.stream).toBe(true)
+  })
+})
+
+describe("fetchLiveModelIds", () => {
+  const res = (status, body) => new Response(typeof body === "string" ? body : JSON.stringify(body), { status })
+
+  test("parses an OpenAI-style model list", async () => {
+    const ids = await fetchLiveModelIds("https://x.example", "k", async () => res(200, { object: "list", data: [{ id: "spark-x2.6" }, { id: "xopglm52" }] }))
+    expect(ids).toEqual(["spark-x2.6", "xopglm52"])
+  })
+
+  test("returns null on any failure (non-200, bad JSON, network)", async () => {
+    expect(await fetchLiveModelIds("https://x.example", "k", async () => res(401, { code: 401 }))).toBeNull()
+    expect(await fetchLiveModelIds("https://x.example", "k", async () => res(200, "not-json"))).toBeNull()
+    expect(await fetchLiveModelIds("https://x.example", "k", async () => { throw new Error("boom") })).toBeNull()
+    expect(await fetchLiveModelIds("https://x.example", "  ", async () => res(200, { data: [] }))).toBeNull()
   })
 })
 
@@ -150,6 +166,38 @@ describe("makePlugin", () => {
     expect(listed["my-custom-model"]).toEqual(incoming["my-custom-model"])
     expect(listed["spark-x2.6"].name).toBe("Spark X2.6")
     expect(Object.keys(listed).length).toBe(Object.keys(incoming).length)
+  })
+
+  test("provider.models with a live /v2/models list serves exactly the authorized ids", async () => {
+    const liveFetch = async () => new Response(JSON.stringify({ object: "list", data: [{ id: "spark-x2.6" }, { id: "brand-new-model" }] }), { status: 200 })
+    const hooks = await makePlugin("maas", { fetch: liveFetch })({ client: {}, directory: ".", worktree: ".", project: {} })
+    const incoming = {}
+    for (const [id, m] of Object.entries(toProviderModels(MODELS.maas))) {
+      incoming[id] = {
+        ...m,
+        id,
+        api: { id, url: "https://example.invalid/v2", npm: "@ai-sdk/openai-compatible" },
+        capabilities: { reasoning: m.reasoning === true, toolcall: true, attachment: false, input: { text: true } },
+      }
+    }
+    const listed = await hooks.provider.models({ id: "xfyun-maas", models: incoming }, { auth: { type: "api", key: "k" } })
+    expect(Object.keys(listed).sort()).toEqual(["brand-new-model", "spark-x2.6"])
+    expect(listed["spark-x2.6"].name).toBe("Spark X2.6")
+    expect(listed["spark-x2.6"].limit.context).toBe(1048576)
+    expect(listed["brand-new-model"].name).toBe("brand-new-model")
+    expect(listed["brand-new-model"].api.npm).toBe("@ai-sdk/openai-compatible")
+    expect(listed["brand-new-model"].capabilities.toolcall).toBe(true)
+  })
+
+  test("provider.models falls back to the static table when the live list fails", async () => {
+    const deadFetch = async () => { throw new Error("network down") }
+    const hooks = await makePlugin("maas", { fetch: deadFetch })({ client: {}, directory: ".", worktree: ".", project: {} })
+    const incoming = {}
+    for (const [id, m] of Object.entries(toProviderModels(MODELS.maas))) {
+      incoming[id] = { ...m, id, api: { id, url: "u", npm: "n" }, capabilities: { reasoning: false, toolcall: true, attachment: false, input: { text: true } } }
+    }
+    const listed = await hooks.provider.models({ id: "xfyun-maas", models: incoming }, { auth: { type: "api", key: "k" } })
+    expect(Object.keys(listed).length).toBe(MODELS.maas.length)
   })
 
   test("provider hook echoes the static table for its line", async () => {
