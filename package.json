@@ -13,7 +13,8 @@
     "opencode2.mjs",
     "lib/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "README.zh-CN.md"
   ],
   "scripts": {
     "test": "bun test",
@@ -30,5 +31,12 @@
     "maas"
   ],
   "license": "MIT",
-  "magpie": {}
+  "magpie": {
+    "name": "讯飞星辰 MaaS",
+    "summary": {
+      "en": "iFlytek Xfyun MaaS: Spark, GLM, DeepSeek, Kimi, Qwen and more — pay-as-you-go, Coding Plan and Token Plan.",
+      "zh": "讯飞星辰 MaaS:星火、GLM、DeepSeek、Kimi、Qwen 等模型,按量付费与 Coding/Token 套餐。"
+    },
+    "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJYZnl1biBNYWFTIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxYzZlZjIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMGFhNmUwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iNTYiIGhlaWdodD0iNTYiIHJ4PSIxNCIgZmlsbD0idXJsKCNnKSIvPgogIDxwYXRoIGQ9Ik0xOCAyMGgyOHY2SDM2djIyaC04VjI2aC0xMHoiIGZpbGw9IiNmZmYiLz4KICA8Y2lyY2xlIGN4PSI0NCIgY3k9IjQyIiByPSI2IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuODUiLz4KPC9zdmc+Cg=="
+  }
 }
