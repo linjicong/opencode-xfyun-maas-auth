@@ -1,0 +1,34 @@
+{
+  "name": "opencode-xfyun-maas-auth",
+  "version": "0.1.0",
+  "description": "magpie / OpenCode provider plugin for iFlytek Xfyun MaaS (讯飞星辰 MaaS): pay-as-you-go Spark & open-source models, Coding Plan and Token Plan subscriptions",
+  "type": "module",
+  "main": "./opencode.mjs",
+  "exports": {
+    ".": "./opencode2.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "opencode.mjs",
+    "opencode2.mjs",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "bun test",
+    "check": "bun scripts/check.mjs"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "magpie",
+    "magpie-plugin",
+    "xfyun",
+    "iflytek",
+    "spark",
+    "maas"
+  ],
+  "license": "MIT",
+  "magpie": {}
+}
