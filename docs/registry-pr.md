@@ -1,7 +1,7 @@
 # 上架材料:registry.json 收录 PR
 
 目标仓库:[magpie-community/plugins](https://github.com/magpie-community/plugins) 的 `registry.json`。
-图标 URL 在 GitHub 仓库创建后填入 `{OWNER}`。
+图标 URL 在 GitHub 仓库创建后填入 `linjicong`。
 
 ## 条目(追加到 plugins 数组,按字母序插到合适位置)
 
@@ -14,7 +14,7 @@
 说明:icon 可省略(条目里没写就显示默认拼图图标),或用仓库 raw URL:
 
 ```json
-"icon": "https://raw.githubusercontent.com/{OWNER}/opencode-xfyun-maas-auth/main/icon.svg"
+"icon": "https://raw.githubusercontent.com/linjicong/opencode-xfyun-maas-auth/main/icon.svg"
 ```
 
 ## PR 标题
@@ -44,7 +44,7 @@ Xfyun publishes no usage API, so there is no usage hook — quotas live in the
 console (noted in the README).
 
 - npm: https://www.npmjs.com/package/opencode-xfyun-maas-auth
-- repo: https://github.com/{OWNER}/opencode-xfyun-maas-auth (topic: magpie-plugin)
+- repo: https://github.com/linjicong/opencode-xfyun-maas-auth (topic: magpie-plugin)
 - tested against magpie 0.1.3386 (sandbox load/login/provider-test E2E in the repo)
 ```
 

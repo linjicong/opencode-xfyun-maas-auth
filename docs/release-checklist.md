@@ -15,7 +15,7 @@
 ## 1. GitHub 仓库
 
 - [ ] 在 GitHub 建公开仓库 `opencode-xfyun-maas-auth`(不要勾选初始化文件)
-- [ ] `git remote add origin git@github.com:{OWNER}/opencode-xfyun-maas-auth.git`
+- [ ] `git remote add origin git@github.com:linjicong/opencode-xfyun-maas-auth.git`
 - [ ] `package.json` 补 `repository`/`homepage`/`bugs` 字段(指向该仓库)
 - [ ] `git push -u origin main`
 - [ ] 仓库页 → Topics 添加 `magpie-plugin`(以及其他想加的)
