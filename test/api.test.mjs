@@ -129,8 +129,23 @@ describe("makePlugin", () => {
       const hooks = await load(line)
       const cfg = { provider: {} }
       await hooks.config(cfg)
-      const listed = await hooks.provider.models(cfg.provider[hooks.auth.provider])
-      expect(listed).toEqual(toProviderModels(MODELS[line]))
+      // magpie hands the hook internal-form models derived from our config;
+      // the hook must spread them (capabilities, api) and only pin our values.
+      const incoming = {}
+      for (const [id, m] of Object.entries(toProviderModels(MODELS[line]))) {
+        incoming[id] = {
+          ...m,
+          id,
+          api: { id, url: "https://example.invalid/v2", npm: "@ai-sdk/openai-compatible" },
+          capabilities: { reasoning: m.reasoning === true, toolcall: true, attachment: false, input: { text: true } },
+        }
+      }
+      const listed = await hooks.provider.models({ id: hooks.auth.provider, models: incoming })
+      const entry = listed["spark-x2.6"] ?? listed["xsparkx2agent"] ?? listed["spark-x2.5"]
+      expect(entry.capabilities.reasoning).toBe(true)
+      expect(entry.api.npm).toBe("@ai-sdk/openai-compatible")
+      expect(entry.name).toBeTruthy()
+      if (line === "coding") expect(listed["xsparkx2agent"].rate).toBe(2)
     }
   })
 })
