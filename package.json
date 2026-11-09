@@ -1,6 +1,6 @@
 {
   "name": "opencode-xfyun-maas-auth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "magpie / OpenCode provider plugin for iFlytek Xfyun MaaS (讯飞星辰 MaaS): pay-as-you-go Spark & open-source models, Coding Plan and Token Plan subscriptions",
   "type": "module",
   "main": "./opencode.mjs",

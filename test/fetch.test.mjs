@@ -58,16 +58,18 @@ describe("signed fetch against the gateway", () => {
     expect(all).toContain("data: [DONE]")
   })
 
-  test("401 gains X-Magpie-Sign-In: expired with the body byte-identical", async () => {
-    const expected = await fetch(`${mock.url}/v2/chat/completions?status=401`, {
+  test("401 gains X-Magpie-Sign-In: expired with the body byte-identical and other headers intact", async () => {
+    const direct = await fetch(`${mock.url}/v2/chat/completions?status=401`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: "{}",
-    }).then((r) => r.text())
+    })
+    const expected = await direct.text()
 
     const res = await post("/v2/chat/completions?status=401", JSON.stringify({ model: "spark-x2.6", messages: [] }))
     expect(res.status).toBe(401)
     expect(res.headers.get("x-magpie-sign-in")).toBe("expired")
+    expect(res.headers.get("content-type")).toBe(direct.headers.get("content-type"))
     expect(await res.text()).toBe(expected)
   })
 

@@ -22,6 +22,7 @@ const chatBody = JSON.stringify({
 })
 
 const errorBody = JSON.stringify({ code: 11201, message: "当日使用量达到上限" })
+const unauthorizedBody = JSON.stringify({ error: { code: 401, message: "HMAC signature cannot be verified: apikey not found" } })
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://mock.local")
@@ -41,7 +42,7 @@ const server = createServer(async (req, res) => {
     const status = Number(url.searchParams.get("status") ?? 0)
     if (status === 401 || status === 429) {
       res.writeHead(status, { "content-type": "application/json" })
-      res.end(errorBody)
+      res.end(status === 401 ? unauthorizedBody : errorBody)
       return
     }
 

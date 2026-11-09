@@ -88,11 +88,16 @@ for (const k of ["transformBody", "makePlugin", "makeFetch"]) {
   if (typeof internal._internal?.[k] !== "function") problems.push(`index.mjs _internal.${k} is missing`)
 }
 
-// opencode2.mjs must be byte-identical to the community adapter
+// opencode2.mjs must be byte-identical to the community adapter. The live
+// fetch is primary; when GitHub is unreachable, the pinned sha below still
+// catches accidental local edits (and prints a loud warning that the live
+// drift check was skipped — bump the pin deliberately when upstream changes).
+const OPENCODE2_SHA256 = "2fdc96a5b5a6e3d0528b625b0e8e5e4cd29324bc013e198d188d3840c6beaf51"
 {
   const { createHash } = await import("node:crypto")
   const { readFileSync } = await import("node:fs")
   const local = readFileSync(resolve(repo, "opencode2.mjs"))
+  const localSha = createHash("sha256").update(local).digest("hex")
   let upstream = null
   for (let attempt = 1; attempt <= 3 && upstream === null; attempt++) {
     try {
@@ -100,7 +105,7 @@ for (const k of ["transformBody", "makePlugin", "makeFetch"]) {
       if (!r.ok) throw new Error(`HTTP ${r.status}`)
       upstream = Buffer.from(await r.arrayBuffer())
     } catch (e) {
-      if (attempt === 3) console.log(`  (skipped upstream opencode2.mjs comparison: ${e.message})`)
+      if (attempt === 3) console.log(`  ⚠ could not reach GitHub for the live opencode2.mjs comparison (${e.message}); verifying against the pinned sha only`)
       else await new Promise((r2) => setTimeout(r2, 500 * attempt))
     }
   }
@@ -108,6 +113,9 @@ for (const k of ["transformBody", "makePlugin", "makeFetch"]) {
     const a = createHash("sha256").update(local).digest("hex")
     const b = createHash("sha256").update(upstream).digest("hex")
     if (a !== b) problems.push("opencode2.mjs differs from magpie-community/plugins scripts/opencode2.mjs: copy it again")
+  }
+  if (OPENCODE2_SHA256 !== "__PIN__" && localSha !== OPENCODE2_SHA256) {
+    problems.push(`opencode2.mjs sha256 ${localSha.slice(0, 12)}… does not match the pinned ${OPENCODE2_SHA256.slice(0, 12)}… (edited locally or upstream moved — if the latter, copy the new file and bump the pin)`)
   }
 }
 
