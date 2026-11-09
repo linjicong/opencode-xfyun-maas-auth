@@ -124,6 +124,34 @@ describe("makePlugin", () => {
     expect(await hooks.auth.loader(async () => ({ type: "oauth", access: "x" }))).toEqual({})
   })
 
+  test("provider hook merges user-added models through instead of dropping them", async () => {
+    const hooks = await load("maas")
+    const cfg = { provider: {} }
+    await hooks.config(cfg)
+    const base = toProviderModels(MODELS.maas)
+    const incoming = {}
+    for (const [id, m] of Object.entries(base)) {
+      incoming[id] = {
+        ...m,
+        id,
+        api: { id, url: "https://example.invalid/v2", npm: "@ai-sdk/openai-compatible" },
+        capabilities: { reasoning: m.reasoning === true, toolcall: true, attachment: false, input: { text: true } },
+      }
+    }
+    // a model the user added to their own provider config — not in our table
+    incoming["my-custom-model"] = {
+      id: "my-custom-model",
+      name: "My Custom",
+      api: { id: "my-custom-model", url: "https://example.invalid/v2", npm: "@ai-sdk/openai-compatible" },
+      limit: { context: 8192, output: 4096 },
+      capabilities: { reasoning: false, toolcall: true, attachment: false, input: { text: true } },
+    }
+    const listed = await hooks.provider.models({ id: "xfyun-maas", models: incoming })
+    expect(listed["my-custom-model"]).toEqual(incoming["my-custom-model"])
+    expect(listed["spark-x2.6"].name).toBe("Spark X2.6")
+    expect(Object.keys(listed).length).toBe(Object.keys(incoming).length)
+  })
+
   test("provider hook echoes the static table for its line", async () => {
     for (const line of ["maas", "coding", "token"]) {
       const hooks = await load(line)

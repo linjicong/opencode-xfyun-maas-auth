@@ -174,7 +174,8 @@ opencode-xfyun-maas-auth/
    repository 字段指向仓库;LICENSE MIT。
 2. npm:`npm login`(用户操作或给 token)`npm publish`。包名 `opencode-xfyun-maas-auth`
    (被占用则 `opencode-xfyun-auth` → `magpie-xfyun-maas`)。
-3. registry.json PR(fork `magpie-community/plugins`,加一条):
+3. registry.json PR(fork `magpie-community/plugins`,加一条;**条目以 `docs/registry-pr.md` 为准**——
+   下面这段早期草稿的 providers id 有误,已被修正取代):
    `{ "package": "opencode-xfyun-maas-auth", "name": "讯飞星辰 MaaS", "icon": "<raw svg url>",
       "providers": ["xfyun", "xfyun-coding", "xfyun-token"],
       "summary": { "en": "iFlytek Xfyun MaaS: Spark, GLM, DeepSeek, Kimi, Qwen and more.",
